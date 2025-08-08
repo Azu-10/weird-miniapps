@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tinder for Fridges</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: pink;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        overflow-x: hidden;
+    }
+    h1 {
+        margin-top: 20px;
+    }
+    .input-screen, .results-screen, .hooray-screen {
+        display: none;
+        padding: 20px;
+    }
+    .active {
+        display: block;
+    }
+    textarea {
+        width: 80%;
+        height: 100px;
+        margin-top: 10px;
+    }
+    button {
+        padding: 10px 20px;
+        margin: 10px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 5px;
+    }
+    .yes-btn {
+        background-color: #ff4d94;
+        color: white;
+    }
+    .no-btn {
+        background-color: #ccc;
+        color: black;
+    }
+    .fridge-card {
+        background: white;
+        padding: 15px;
+        margin: 20px auto;
+        border-radius: 10px;
+        width: 300px;
+        box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+    }
+    .fridge-card img {
+        width: 100%;
+        border-radius: 10px;
+    }
+    .hearts {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 1000;
+    }
+    .heart {
+        position: absolute;
+        color: red;
+        font-size: 24px;
+        animation: fall 4s linear infinite;
+    }
+    @keyframes fall {
+        0% { transform: translateY(-10%) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+</style>
+</head>
+<body>
+
+<h1>❤️ Tinder for Fridges ❤️</h1>
+
+<div class="input-screen active">
+    <h2>Enter your fridge items (name:quantity per line)</h2>
+    <textarea id="userFridge" placeholder="milk:2&#10;eggs:12&#10;cheese:1"></textarea><br>
+    <button onclick="findMatches()">Find Matches</button>
+</div>
+
+<div class="results-screen">
+    <div id="fridgeList"></div>
+</div>
+
+<div class="hooray-screen">
+    <h2>🎉 Hooray! It's a Match! 🎉</h2>
+    <div class="hearts" id="hearts"></div>
+</div>
+
+<script>
+const fridgeNames = [
+    "Coolio Max", "Chillzilla", "Ice Ice Baby", "Freeze Frame", "Mr. Frosty",
+    "Polar Palace", "Chill Master 3000", "Snow Keeper", "The Cool Cube", "Arctic Buddy",
+    "Fridgie Smalls", "Cold As Ice", "Penguin Palace", "The Iceberg", "Frosty’s Home",
+    "Glacier Guard", "SubZero King", "Cool Breeze", "Chillomatic", "Frozen Fortress",
+    "Cool Beans", "Ice Lord", "Frostinator", "The Igloo", "Chill Thrill",
+    "Freezy Pop", "Fridgezilla", "The Cooler", "Arctic Angel", "Snowball"
+];
+
+const fridgeBios = [
+    "Keeps your veggies fresh and your drinks frosty.",
+    "Master of midnight snacks.",
+    "Where cheese dreams live.",
+    "Cold heart, warm shelves.",
+    "Your ice-cold partner in crime.",
+    "Keeping leftovers alive since day one.",
+    "Frozen but friendly.",
+    "A chill companion for hot days.",
+    "Making milk last longer, one day at a time.",
+    "Snacks are safe with me."
+];
+
+const sampleIngredients = ["milk", "eggs", "cheese", "butter", "yogurt", "carrots", "lettuce", "tomatoes", "onions", "juice", "fish", "chicken", "beef", "pasta", "rice", "beans", "bread", "jam", "water", "spinach"];
+
+let fridges = [];
+
+function generateFridges() {
+    for (let i = 0; i < 30; i++) {
+        let ingredients = {};
+        let numItems = Math.floor(Math.random() * 6) + 5;
+        for (let j = 0; j < numItems; j++) {
+            let item = sampleIngredients[Math.floor(Math.random() * sampleIngredients.length)];
+            let qty = Math.floor(Math.random() * 10) + 1;
+            ingredients[item] = qty;
+        }
+        fridges.push({
+            name: fridgeNames[i],
+            bio: fridgeBios[Math.floor(Math.random() * fridgeBios.length)],
+            ingredients: ingredients,
+            image: `https://source.unsplash.com/300x200/?fridge,${i}`,
+            suggestion: "Make a yummy omelette or pasta tonight!"
+        });
+    }
+}
+
+function parseUserFridge(input) {
+    let lines = input.split("\n");
+    let obj = {};
+    lines.forEach(line => {
+        let [item, qty] = line.split(":");
+        if (item && qty) {
+            obj[item.trim().toLowerCase()] = parseInt(qty.trim());
+        }
+    });
+    return obj;
+}
+
+function calculateCompatibility(user, fridge) {
+    let score = 0;
+    let maxScore = 0;
+    for (let item in user) {
+        maxScore += 70;
+        if (fridge.ingredients[item] !== undefined) {
+            let diff = Math.abs(fridge.ingredients[item] - user[item]);
+            if (diff === 0) score += 100;
+            else if (diff <= 1) score += 70;
+            else if (diff <= 3) score += 50;
+            else if (diff <= 5) score += 30;
+            else score += 10;
+        }
+    }
+    return Math.round((score / maxScore) * 100);
+}
+
+function findMatches() {
+    let userFridge = parseUserFridge(document.getElementById("userFridge").value);
+    fridges.forEach(f => {
+        f.compatibility = calculateCompatibility(userFridge, f);
+    });
+    fridges.sort((a, b) => b.compatibility - a.compatibility);
+
+    document.querySelector(".input-screen").classList.remove("active");
+    document.querySelector(".results-screen").classList.add("active");
+
+    let list = document.getElementById("fridgeList");
+    list.innerHTML = "";
+    fridges.forEach(f => {
+        let card = document.createElement("div");
+        card.className = "fridge-card";
+        card.innerHTML = `
+            <img src="${f.image}" alt="${f.name}">
+            <h3>${f.name}</h3>
+            <p>${f.bio}</p>
+            <p><strong>Suggestion:</strong> ${f.suggestion}</p>
+            <p>Compatibility: ${f.compatibility}%</p>
+            <button class="yes-btn" onclick="matchHooray()">Yes</button>
+            <button class="no-btn" onclick="this.parentElement.remove()">No</button>
+        `;
+        list.appendChild(card);
+    });
+}
+
+function matchHooray() {
+    document.querySelector(".results-screen").classList.remove("active");
+    document.querySelector(".hooray-screen").classList.add("active");
+    startHearts();
+}
+
+function startHearts() {
+    const heartsContainer = document.getElementById("hearts");
+    heartsContainer.innerHTML = "";
+    for (let i = 0; i < 30; i++) {
+        let heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerHTML = "💖";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.animationDuration = (Math.random() * 2 + 3) + "s";
+        heartsContainer.appendChild(heart);
+    }
+}
+
+generateFridges();
+</script>
+</body>
+</html>

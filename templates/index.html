@@ -5,43 +5,78 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
         body {
-            font-family: sans-serif;
+            font-family: 'Inter', cursive, sans-serif;
             padding: 20px;
-            background-color: #f4f4f4;
+            background: linear-gradient(135deg, #ffecd2, #fcfc13);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
         }
         h1 {
-            color: #333;
+            color: #222;
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px #fff;
         }
-        ul {
-            list-style-type: none;
-            padding: 0;
+        .tiles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
         }
-        li {
-            margin: 10px 0;
+        .tile {
+            background: #fff;
+            border-radius: 35px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
         }
+        .tile:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(52, 49, 49, 0.25);
+        }
+        .tile span {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+        /* Fun colors for each tile */
+        .crow { background: #f5b803; }
+        .dino { background: #f60303; }
+        .cat { background: #00ffe5; }
+        .fridge { background: #27f103; }
+        .keyboard { background: #d503fa; }
         a {
             text-decoration: none;
-            color: #0077cc;
-            font-size: 1.2rem;
-        }
-        a:hover {
-            text-decoration: underline;
+            color: #000;
         }
     </style>
 </head>
 <body>
-    <h1>🌀 Weird Mini Apps</h1>
-    <p>Select a mini app below:</p>
-    <ul>
-        <li><a href="/crow_ai">🪶 The Crow AI</a></li>
-        <li><a href="/dino">🦖 Dino Game Without Obstacles</a></li>
-        <li><a href="/schrodinger">🐈 Schrodinger App</a></li>
-        <li><a href="/fridge_tinder">🧊 Tinder for Fridges</a></li>
-        <li><a href="/pixel_guessor">🟪 Pixel Guessor</a></li>
-        <li><a href="/mouse_maze">🖱️ Mouse Maze</a></li>
-        <li><a href="/horny_app">🔊 Horny App</a></li>
-        <li><a href="/wrong_guessor">🚫 The Wrong Guessor</a></li>
-        <li><a href="/keyboard">⌨️ The Perfect Keyboard</a></li>
-    </ul>
+    <h1>😎 Weird Mini Apps 😎</h1>
+    <div class="tiles">
+        <a href="/crow_ai" class="tile crow">
+            <span>🐦‍⬛</span> Talk to a Sassy Crow
+        </a>
+        <a href="/dino" class="tile dino">
+            <span>🦖</span> Dino Without Danger
+        </a>
+        <a href="/schrodinger" class="tile cat">
+            <span>🎁</span> Open the Mystery Box
+        </a>
+        <a href="/fridge_tinder" class="tile fridge">
+            <span>🧊</span> Swipe Fridge Love
+        </a>
+        <a href="/keyboard" class="tile keyboard">
+            <span>⌨️</span> Build the Perfect Keyboard
+        </a>
+    </div>
 </body>
 </html>

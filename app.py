@@ -42,5 +42,10 @@ def schrodinger():
 def keyboard():
     return render_template("keyboard.html")
 
+@app.route("/fridge_tinder")
+def fridge_tinder():
+    return render_template("fridge_tinder.html")
+
+
 if __name__ == "__main__":
     app.run(debug=True)
