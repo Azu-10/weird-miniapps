@@ -30,5 +30,9 @@ def clear_chat():
     session.pop("chat", None)
     return redirect(url_for("crow_ai"))
 
+@app.route("/dino")
+def dino_game():
+    return render_template("dino.html")
+
 if __name__ == "__main__":
     app.run(debug=True)
