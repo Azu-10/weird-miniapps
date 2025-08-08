@@ -38,6 +38,9 @@ def dino_game():
 def schrodinger():
     return render_template("schrodinger.html")
 
+@app.route("/keyboard")
+def keyboard():
+    return render_template("keyboard.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
