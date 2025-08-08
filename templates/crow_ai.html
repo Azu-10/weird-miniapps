@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crow AI Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+            background-color: #f4f4f4;
+        }
+        .chat-box {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .message {
+            display: flex;
+            margin: 15px 0;
+            align-items: flex-start;
+            opacity: 0;
+            transform: scale(0.95);
+            animation: popIn 0.3s ease forwards;
+        }
+        @keyframes popIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .message.you {
+            justify-content: flex-end;
+        }
+        .message.crow {
+            justify-content: flex-start;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 50%;
+        }
+        .bubble {
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 70%;
+            animation: popIn 0.3s ease forwards;
+        }
+        .you .bubble {
+            background-color: #d1e7dd;
+            color: #000;
+        }
+        .crow .bubble {
+            background-color: #1a1a1a;
+            color: white;
+        }
+        .input-box {
+            margin-top: 20px;
+            display: flex;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .back-home, .clear-chat {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #333;
+        }
+        .typing {
+            font-style: italic;
+            color: #ccc;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-box">
+        <h2>🪶 Crow AI Chat</h2>
+
+        <div id="chat">
+            {% for msg in chat %}
+                <div class="message {{ 'you' if msg.sender == 'You' else 'crow' }}">
+                    {% if msg.sender == 'Crow' %}
+                        <img src="{{ url_for('static', filename='crow_avatar.png') }}" class="avatar">
+                    {% endif %}
+                    <div class="bubble">
+                        <strong>{{ msg.sender }}:</strong> {{ msg.message }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <form method="post" class="input-box" onsubmit="return handleSubmit()">
+            <input type="text" name="user_input" id="user_input" placeholder="Say something..." required>
+            <button type="submit">Send</button>
+        </form>
+
+        <a class="clear-chat" href="/clear_chat">🧹 Clear Chat</a>
+        <a class="back-home" href="/">← Back to Home</a>
+    </div>
+
+    <audio id="crowSound" src="{{ url_for('static', filename='crow.mp3') }}"></audio>
+
+    <script>
+        function handleSubmit() {
+            showTyping();
+            return true;
+        }
+
+        function showTyping() {
+            const chatBox = document.getElementById("chat");
+
+            // Remove any existing typing indicator
+            const existing = document.querySelector(".typing-container");
+            if (existing) existing.remove();
+
+            // Create typing indicator
+            const typingDiv = document.createElement("div");
+            typingDiv.className = "message crow typing-container";
+            typingDiv.innerHTML = `
+                <img src="{{ url_for('static', filename='crow_avatar.png') }}" class="avatar">
+                <div class="bubble typing">Crow is typing...</div>
+            `;
+
+            chatBox.appendChild(typingDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Play crow sound
+            const crowSound = document.getElementById("crowSound");
+            crowSound.currentTime = 0;
+            crowSound.play();
+        }
+    </script>
+    <!-- Audio element -->
+<audio id="crowSound" src="{{ url_for('static', filename='crow.mp3') }}"></audio>
+
+<script>
+    // Scroll chat to bottom
+    const chatBox = document.getElementById("chat");
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // Play crow sound if the last message is from crow
+    const messages = document.querySelectorAll(".message.crow");
+    if (messages.length > 0) {
+        const lastCrowMsg = messages[messages.length - 1];
+        const crowSound = document.getElementById("crowSound");
+
+        if (lastCrowMsg.querySelector(".bubble")?.innerText.includes("CAW")) {
+            crowSound.currentTime = 0;
+            crowSound.play();
+        }
+    }
+
+    // Optional: Add typing effect when submitting
+    function handleSubmit() {
+        showTyping();
+        return true;
+    }
+
+    function showTyping() {
+        const existing = document.querySelector(".typing-container");
+        if (existing) existing.remove();
+
+        const typingDiv = document.createElement("div");
+        typingDiv.className = "message crow typing-container";
+        typingDiv.innerHTML = `
+            <img src="{{ url_for('static', filename='crow_avatar.png') }}" class="avatar">
+            <div class="bubble typing">Crow is typing...</div>
+        `;
+
+        chatBox.appendChild(typingDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+
+</body>
+</html>

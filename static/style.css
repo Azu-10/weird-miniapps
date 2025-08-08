@@ -1,7 +1,144 @@
 body {
     font-family: Arial, sans-serif;
-    padding: 20px;
+    padding: 30px;
+    background-color: #f4f4f4;
 }
-h1 {
-    color: darkslateblue;
+
+h1, h2 {
+    color: #2c2c2c;
+    text-align: center;
+}
+
+.chat-box {
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 600px;
+    margin: auto;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.message {
+    display: flex;
+    margin: 15px 0;
+    align-items: flex-start;
+    animation: popIn 0.3s ease-out;
+}
+
+.message.you {
+    justify-content: flex-end;
+}
+
+.message.crow {
+    justify-content: flex-start;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.bubble {
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 70%;
+    animation: bounceIn 0.3s ease;
+}
+
+.you .bubble {
+    background-color: #d1e7dd;
+    color: #000;
+}
+
+.crow .bubble {
+    background-color: #e2e3e5;
+    color: #000;
+}
+
+.input-box {
+    margin-top: 20px;
+    display: flex;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+button {
+    margin-left: 10px;
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: #333;
+}
+
+.clear-chat, .back-home {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #555;
+    font-weight: bold;
+    transition: color 0.2s ease;
+}
+
+.clear-chat:hover, .back-home:hover {
+    color: black;
+}
+
+/* Typing effect */
+.typing {
+    font-style: italic;
+    color: #666;
+    animation: blink 1s step-start 0s infinite;
+}
+
+/* Animations */
+@keyframes blink {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    60% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Pop-in class for JS */
+.pop-in {
+    animation: popIn 0.4s ease-out;
 }
