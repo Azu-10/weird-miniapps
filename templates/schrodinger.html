@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Schrödinger's Box</title>
+  <style>
+    body {
+      font-family: monospace;
+      background-color: black;
+      color: white;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    .center {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .yes {
+      background: green;
+      color: white;
+    }
+    .no {
+      background: red;
+      color: white;
+    }
+    .popup {
+      position: fixed;
+      background: rgba(255, 0, 0, 0.9);
+      color: white;
+      padding: 20px;
+      font-size: 1.1em;
+      z-index: 9999;
+      border: 2px solid white;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .box {
+      width: 200px;
+      height: 200px;
+      border: 4px solid white;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 30px;
+      transition: transform 0.3s;
+    }
+    .box:hover {
+      transform: scale(1.05);
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div id="start" class="center">
+  <h1>☢️ Do you want to open the box?</h1>
+  <div>
+    <button class="yes" onclick="startPopups()">Yes</button>
+    <button class="no" onclick="goHome()">No</button>
+  </div>
+</div>
+
+<div id="boxArea" class="center hidden">
+  <h1>📦 Schrödinger's Box</h1>
+  <p>Click the box to reveal what's inside...</p>
+  <div class="box" id="colorBox" onclick="revealFinalMessage()"></div>
+  <p id="finalMessage" style="max-width: 80%; font-size: 1.4em; margin-top: 20px;"></p>
+</div>
+
+<script>
+  let current = 0;
+  const totalPopups = Math.floor(Math.random() * 16) + 10; // random between 10 and 25
+
+  function goHome() {
+    window.location.href = "/";
+  }
+
+  function startPopups() {
+    document.getElementById("start").classList.add("hidden");
+    showNextPopup();
+  }
+
+  function showNextPopup() {
+    if (current >= totalPopups) {
+      document.getElementById("boxArea").classList.remove("hidden");
+      startColorChange(); // Start box color effect
+      return;
+    }
+
+    const popup = document.createElement("div");
+    popup.className = "popup";
+    popup.innerHTML = `
+      <p>⚠️ Are you sure?</p>
+      <button class="yes" onclick="nextPopup(this)">Yes</button>
+      <button class="no" onclick="goHome()">No</button>
+    `;
+
+    const size = 250 + current * 10;
+    popup.style.width = size + "px";
+
+    const maxX = window.innerWidth - size;
+    const maxY = window.innerHeight - 150;
+
+    popup.style.left = Math.random() * maxX + "px";
+    popup.style.top = Math.random() * maxY + "px";
+
+    document.body.appendChild(popup);
+  }
+
+  function nextPopup(btn) {
+    const popup = btn.closest(".popup");
+    popup.remove();
+    current++;
+    showNextPopup();
+  }
+
+  function revealFinalMessage() {
+    const message = "Not sorry for the inconvenience, but since the box has opened we can't reveal what's inside of it.";
+    document.getElementById("finalMessage").innerText = message;
+  }
+
+  function startColorChange() {
+    const box = document.getElementById("colorBox");
+    setInterval(() => {
+      box.style.backgroundColor = getRandomColor();
+    }, 100); // Change color every 100ms
+  }
+
+  function getRandomColor() {
+    const r = Math.floor(Math.random() * 256);
+    const g = Math.floor(Math.random() * 256);
+    const b = Math.floor(Math.random() * 256);
+    return `rgb(${r}, ${g}, ${b})`;
+  }
+</script>
+
+</body>
+</html>

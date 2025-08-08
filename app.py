@@ -34,5 +34,10 @@ def clear_chat():
 def dino_game():
     return render_template("dino.html")
 
+@app.route("/schrodinger")
+def schrodinger():
+    return render_template("schrodinger.html")
+
+
 if __name__ == "__main__":
     app.run(debug=True)
