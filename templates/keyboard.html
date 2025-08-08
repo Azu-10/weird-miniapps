@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frustrating Keyboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .key-button {
+            transition: transform 0.1s ease-in-out, background-color 0.1s ease-in-out;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .key-button:active {
+            transform: scale(0.95);
+            background-color: #4a5568;
+        }
+    </style>
+</head>
+<body class="p-4 flex items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-5xl p-6 bg-gray-800 rounded-2xl shadow-xl space-y-6">
+        <h1 class="text-3xl font-bold text-center text-white mb-2">The Normal Keyboard</h1>
+        <p class="text-center text-gray-400 max-w-xl mx-auto">
+            can u even write a sentence properly!
+        </p>
+        
+        <textarea id="output" class="w-full h-32 p-4 bg-gray-700 text-white rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"></textarea>
+        
+        <div id="keyboard" class="flex flex-col gap-2 p-4 bg-gray-900 rounded-lg">
+            <!-- Keyboard rows will be dynamically generated here -->
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
+            <button id="resetButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-colors duration-200">
+                Reset Keys
+            </button>
+            <button id="toggleButton" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-colors duration-200">
+                Reveal Scramble
+            </button>
+        </div>
+        
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const keyboardContainer = document.getElementById('keyboard');
+            const outputArea = document.getElementById('output');
+            const resetButton = document.getElementById('resetButton');
+            const toggleButton = document.getElementById('toggleButton');
+
+            // The standard QWERTY alphabet keys and number keys combined
+            const keysToScramble = [
+                '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+                'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
+                'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L',
+                'Z', 'X', 'C', 'V', 'B', 'N', 'M'
+            ];
+
+            // The full keyboard layout, including symbols and special keys
+            const keyLayouts = [
+                ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+                ['Tab', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '\\'],
+                ['CapsLock', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Enter'],
+                ['Shift', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/', 'Shift'],
+                ['Ctrl', 'Meta', 'Alt', 'Space', 'Alt', 'Fn', 'Ctrl']
+            ];
+
+            // A duplicate array to be shuffled for the "secret" mapping
+            let shuffledKeys = [...keysToScramble];
+            
+            // Function to shuffle an array (Fisher-Yates algorithm)
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            // Function to get the scrambled key for a given key
+            function getScrambledKey(key) {
+                const index = keysToScramble.indexOf(key);
+                return index !== -1 ? shuffledKeys[index] : key;
+            }
+
+            // Function to generate and render the keyboard
+            function renderKeyboard(showScramble = false) {
+                keyboardContainer.innerHTML = '';
+                keyLayouts.forEach(rowKeys => {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.classList.add('flex', 'gap-2', 'w-full');
+                    
+                    rowKeys.forEach(key => {
+                        const button = document.createElement('button');
+                        button.classList.add(
+                            'key-button', 
+                            'flex', 
+                            'items-center', 
+                            'justify-center', 
+                            'bg-gray-700', 
+                            'hover:bg-gray-600', 
+                            'rounded-lg', 
+                            'text-white', 
+                            'font-medium', 
+                            'py-3', 
+                            'text-lg'
+                        );
+                        
+                        let displayKey = key;
+                        let outputKey = key;
+                        
+                        // Handle keys that need to be scrambled
+                        if (keysToScramble.includes(key)) {
+                            outputKey = getScrambledKey(key);
+                            if (showScramble) {
+                                displayKey = outputKey;
+                            }
+                        }
+
+                        // Apply different widths for special keys using Tailwind CSS
+                        if (key === 'Backspace') { button.classList.add('flex-grow-[1.5]'); }
+                        else if (key === 'Tab') { button.classList.add('flex-grow-[1.2]'); }
+                        else if (key === 'CapsLock') { button.classList.add('flex-grow-[1.4]'); }
+                        else if (key === 'Enter') { button.classList.add('flex-grow-[1.7]'); }
+                        else if (key === 'Shift') { button.classList.add('flex-grow-[2.2]'); }
+                        else if (key === 'Space') { button.classList.add('flex-grow-[8]'); }
+                        else if (key === 'Ctrl' || key === 'Alt' || key === 'Meta' || key === 'Fn') { button.classList.add('flex-grow-[1.1]'); }
+                        else { button.classList.add('flex-grow'); }
+
+                        button.textContent = displayKey;
+                        button.dataset.outputKey = outputKey;
+
+                        button.addEventListener('click', () => {
+                            const keyToOutput = button.dataset.outputKey;
+                            if (keyToOutput === 'Backspace') {
+                                outputArea.value = outputArea.value.slice(0, -1);
+                            } else if (keyToOutput === 'Enter') {
+                                outputArea.value += '\n';
+                            } else if (keyToOutput === 'Tab') {
+                                outputArea.value += '    '; // Add a tab space
+                            } else if (keyToOutput.length === 1 || keysToScramble.includes(keyToOutput)) {
+                                outputArea.value += keyToOutput;
+                            }
+                        });
+                        
+                        rowDiv.appendChild(button);
+                    });
+                    keyboardContainer.appendChild(rowDiv);
+                });
+            }
+
+            // Function to reset the keys
+            function resetKeys() {
+                shuffleArray(shuffledKeys);
+                renderKeyboard();
+            }
+
+            // Event listener for the "Reset" button
+            resetButton.addEventListener('click', () => {
+                outputArea.value = ''; // Clear the output area
+                resetKeys();
+            });
+
+            // Event listener for the "Toggle View" button
+            toggleButton.addEventListener('click', () => {
+                const isScrambledView = toggleButton.textContent.includes('Reveal');
+                renderKeyboard(!isScrambledView);
+                toggleButton.textContent = isScrambledView ? 'Hide Scramble' : 'Reveal Scramble';
+            });
+
+            // Initial setup on page load
+            resetKeys();
+        });
+    </script>
+
+</body>
+</html>
